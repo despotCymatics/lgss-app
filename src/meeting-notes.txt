@@ -1,0 +1,26 @@
+affiliates, campagins are multiple - they can toggle the campagins
+
+user is advertiser in leadspedia 
+
+current bit and cap - contract
+
+registration user - login??
+
+service = contract, first filter (roofing)
+
+get contracts, leads distribution = https://developer.leadspedia.com/docs/core-api/43b54d767990d-get-all with advertiserID
+
+contractId in order to display the affiliats 
+
+API Key: 081692f1e81f8b341f6c6aa8343c46da
+API Secret: 89f2cf724d7d33554cebab3e8e8b322d
+
+advertiser is a buyer/user
+
+cotract from advertiser, offerId we get from the contract??, and then we get the campaign
+
+to get affiliates we need to get offers, they have campains from affiliates
+
+flow:
+users logs in, get the advetrtiserId from it, display dashboard, get all contracts/services for advertiserID in filter/dropdown, 
+based on contractId dispaly all affiliates and its campagins (get offesrs and campaigns??)
