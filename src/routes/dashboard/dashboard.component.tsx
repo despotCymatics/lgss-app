@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AffiliateList, { LpAffiliate } from '../../components/dashboard-list/affiliate-list.component';
 import { getData, GetRequest } from '../../utils/leadspedia/api';
 import { InputLabel, MenuItem, Select, Link, Box, Toolbar, Container, Typography, FormControl, SelectChangeEvent } from '@mui/material';
+import CampaignList from '../../components/campaign-list/campaign-list.component';
 
 function Copyright(props: any) {
   return (
@@ -17,8 +18,9 @@ function Copyright(props: any) {
 }
 
 const Dashboard = () => {
-  const [lpAffiliates, setLpAffiliates] = useState<any | null>(null);
-  const [lpVerticals, setLpVerticals] = useState<any | null>(null);
+  const [lpAffiliates, setLpAffiliates] = useState<any[] | null>([]);
+  const [lpCampaigns, setLpCampaigns] = useState<any[] | null>([]);
+  const [lpVerticals, setLpVerticals] = useState<any[] | null>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -26,7 +28,7 @@ const Dashboard = () => {
 
   useEffect(() => {
 
-    fetchAffiliates();
+    //fetchAffiliates();
     fetchVerticals();
   }, []); // Empty dependency array ensures the effect runs only once on mount
 
@@ -65,11 +67,33 @@ const Dashboard = () => {
     }
   };
 
+  const fetchCampaigns = async () => {
+    try {
+      const result = await getData<GetRequest>({
+        path: 'campaigns/getAll.do',
+        payload: {
+          verticalID: vertical,
+          limit: 1000,
+        }
+      });
+
+      if (result.success) {
+        setLpCampaigns(result.response.data);
+        console.log(result)
+      }
+    } catch (error: any) {
+      console.error('Error fetching data:', error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChangeVertical = (event: SelectChangeEvent<string>) => {
     const {
       target: { value },
     } = event;
     setVertical(value);
+    fetchCampaigns();
   }
 
   return (
@@ -90,9 +114,9 @@ const Dashboard = () => {
         <div>
           {isLoading ? (
             <p>Loading...</p>
-          ) : lpAffiliates && lpVerticals ? (
+          ) : (lpVerticals && lpVerticals?.length > 0) ? (
             <div>
-              <h2>Please select Vertical</h2>
+              <h2>Lead Vertical</h2>
               <FormControl fullWidth sx={{ m: 1 }} >
                 <InputLabel id="select-vertical-label">Select Vertical</InputLabel>
                 <Select
@@ -103,24 +127,32 @@ const Dashboard = () => {
                   onChange={handleChangeVertical}
                   label="Select Vertical"
                   placeholder="Select Vertical"
+                  sx={{ width: '60%', background: '#fff', }}
                 >
-                  {lpVerticals.map((vertical: any) => (
+                  {lpVerticals.map((ver: any) => (
                     <MenuItem
-                      key={vertical.verticalID}
-                      value={vertical.verticalID}
+                      key={ver.verticalID}
+                      value={ver.verticalID}
                     >
-                      {vertical.verticalName}
+                      {ver.verticalName}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              {/* <AffiliateList
-                affiliateList={lpAffiliates}
-              /> */}
             </div>
           ) : (
-                <p>No data available</p>
-              )}
+            <p>No data available</p>
+          )}
+          {
+            lpCampaigns && lpCampaigns.length > 0 ? (
+              <div>
+                <h2>Campaigns for Verttical ID: {vertical}</h2>
+                <CampaignList campaignList={lpCampaigns} />
+              </div>
+            ) : (
+              <p>No Campaigns available</p>
+            )
+          }
         </div>
         <Copyright sx={{ pt: 4 }} />
       </Container>
