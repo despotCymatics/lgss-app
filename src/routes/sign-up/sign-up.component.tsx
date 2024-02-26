@@ -1,8 +1,7 @@
-import {useContext, useState } from 'react';
+import { useState } from 'react';
 import { Button, CircularProgress, TextField, Box } from '@mui/material';
-import { createUser, createUserDocumentFromAuth } from '../../utils/firebase/firebase.utils';
+import { createUser } from '../../utils/firebase/firebase.utils';
 //import { useForm } from 'react-hook-form';
-import { UserContext } from '../../contexts/user.context';
 
 const defaultSignUpFormFields = {
   displayName: '',
@@ -17,8 +16,6 @@ const SignUp = () => {
   const { displayName, email, password, advertiserId } = formFields
   const [loading, setLoading] = useState(false)
 
-  const { setCurrentUser } = useContext(UserContext)
-
   const resetFormFields = () => {
     setFormFields(defaultSignUpFormFields)
   }
@@ -30,7 +27,7 @@ const SignUp = () => {
     //console.log(event)
     //if validateField(name, value) error = false
     // else error = true, errorText 
-    
+
     setFormFields({ ...formFields, [name]: value })
   }
 
@@ -39,16 +36,14 @@ const SignUp = () => {
     setLoading(true)
     console.log('submitting...')
     try {
-      const response = await createUser({email,password, displayName, advertiserId})
+      const response = await createUser({ email, password, displayName, advertiserId })
       if (!response.success) {
-       alert(response.error)
+        alert(response.error)
       }
       if (response.user) {
-        setCurrentUser(response.user)
+        console.log(response.user);
       }
-      
       resetFormFields()
-      
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
         alert('User email already in use')
@@ -121,15 +116,15 @@ const SignUp = () => {
         <div>
           {loading ?
             <CircularProgress />
-          :
-          <Button
-            type="submit"
-            size='large'
-            variant='contained'
-          >
-            Submit
+            :
+            <Button
+              type="submit"
+              size='large'
+              variant='contained'
+            >
+              Submit
             </Button>
-          }  
+          }
         </div>
       </Box>
     </div >

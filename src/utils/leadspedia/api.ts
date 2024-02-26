@@ -1,8 +1,6 @@
-import { AnyARecord } from "dns";
-
-const API_BASE_URL = 'https://api.leadspedia.com/core/v2'
-const AUTH = 'Basic MDgxNjkyZjFlODFmOGIzNDFmNmM2YWE4MzQzYzQ2ZGE6ODlmMmNmNzI0ZDdkMzM1NTRjZWJhYjNlOGU4YjMyMmQ='
-const accountMangerID = "6393"
+const API_BASE_URL = process.env.REACT_APP_LP_API_BASE_URL || ''
+const AUTH = process.env.REACT_APP_LP_AUTH || 'default_token'
+//const accountMangerID = "6393"
 
 type Payload = Record<string, string | number>;
 

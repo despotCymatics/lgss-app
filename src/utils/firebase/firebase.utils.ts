@@ -1,7 +1,7 @@
 
 import {initializeApp} from 'firebase/app'
-import {getAuth, GoogleAuthProvider, createUserWithEmailAndPassword, User, UserCredential, signInWithEmailAndPassword} from 'firebase/auth'
-import { DocumentReference, doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
+import {getAuth, GoogleAuthProvider, createUserWithEmailAndPassword, User, UserCredential, signInWithEmailAndPassword, signOut, onAuthStateChanged} from 'firebase/auth'
+import { DocumentReference, doc, getDoc, getFirestore, setDoc, DocumentData } from 'firebase/firestore'
 
 interface CreateUserParams {
   email: string;
@@ -49,9 +49,10 @@ interface AdditionalInformation {
 
 export const createUserDocumentFromAuth = async (
   userAuth: User,
-  additionalInformation: AdditionalInformation
-): Promise<void> => {
-  if (!userAuth) return;
+  additionalInformation?: AdditionalInformation
+):  Promise<DocumentData|null> => {
+
+  if (!userAuth) return null;
 
   const userDocRef: DocumentReference = doc(db, 'users', userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
@@ -72,6 +73,8 @@ export const createUserDocumentFromAuth = async (
       throw err; // Rethrow the error to propagate it up the call stack if needed
     }
   }
+
+  return userSnapshot.data() ?? null
 };
 
 export const createUser = async ({
@@ -105,3 +108,10 @@ export const signInUser = async ({email, password}: SignInUserParams) => {
 
  return await signInWithEmailAndPassword(auth, email, password)
 }
+
+export const SignOutUser = () => signOut(auth)
+
+export const onAuthStateChangedListener = (callback:any) => {
+  onAuthStateChanged(auth, callback)
+}
+  

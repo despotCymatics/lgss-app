@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import AffiliateList, { LpAffiliate } from '../../components/dashboard-list/affiliate-list.component';
+import { useContext, useEffect, useState } from 'react';
+//import AffiliateList, { LpAffiliate } from '../../components/dashboard-list/affiliate-list.component';
 import { getData, GetRequest } from '../../utils/leadspedia/api';
-import { InputLabel, MenuItem, Select, Link, Box, Toolbar, Container, Typography, FormControl, SelectChangeEvent } from '@mui/material';
+import { InputLabel, MenuItem, Select, Link, Box, Toolbar, Container, Typography, FormControl, SelectChangeEvent, CircularProgress } from '@mui/material';
 import CampaignList from '../../components/campaign-list/campaign-list.component';
+import { UserContext } from '../../contexts/user.context';
 
 function Copyright(props: any) {
   return (
@@ -26,11 +27,14 @@ const Dashboard = () => {
 
   const [vertical, setVertical] = useState<string>('')
 
-  useEffect(() => {
+  const { currentUser } = useContext(UserContext)
 
-    //fetchAffiliates();
-    fetchVerticals();
-  }, []); // Empty dependency array ensures the effect runs only once on mount
+  useEffect(() => {
+    console.log(currentUser);
+    if (currentUser) {
+      fetchVerticals();
+    }
+  }, [currentUser])
 
   // move these to separate file
   const fetchAffiliates = async () => {
@@ -74,6 +78,7 @@ const Dashboard = () => {
         payload: {
           verticalID: vertical,
           limit: 1000,
+          status: 'Active',
         }
       });
 
@@ -89,6 +94,7 @@ const Dashboard = () => {
   };
 
   const handleChangeVertical = (event: SelectChangeEvent<string>) => {
+    setIsLoading(true);
     const {
       target: { value },
     } = event;
@@ -105,55 +111,58 @@ const Dashboard = () => {
             ? theme.palette.grey[100]
             : theme.palette.grey[900],
         flexGrow: 1,
-        height: '100vh',
+        height: `calc(100vh - 70px)`,
         overflow: 'auto',
       }}
     >
       <Toolbar />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <div>
-          {isLoading ? (
-            <p>Loading...</p>
-          ) : (lpVerticals && lpVerticals?.length > 0) ? (
-            <div>
-              <h2>Lead Vertical</h2>
-              <FormControl fullWidth sx={{ m: 1 }} >
-                <InputLabel id="select-vertical-label">Select Vertical</InputLabel>
-                <Select
-                  labelId='select-vertical-label'
-                  name='vertical'
-                  id='verticalSelect'
-                  value={vertical}
-                  onChange={handleChangeVertical}
-                  label="Select Vertical"
-                  placeholder="Select Vertical"
-                  sx={{ width: '60%', background: '#fff', }}
-                >
-                  {lpVerticals.map((ver: any) => (
-                    <MenuItem
-                      key={ver.verticalID}
-                      value={ver.verticalID}
-                    >
-                      {ver.verticalName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </div>
-          ) : (
-            <p>No data available</p>
-          )}
-          {
-            lpCampaigns && lpCampaigns.length > 0 ? (
+        {currentUser ? (
+          <div>
+            <span>advertiserId: {currentUser.advertiserId}</span>
+            {isLoading ? (
+              <CircularProgress />
+            ) : (lpVerticals && lpVerticals?.length > 0) ? (
               <div>
-                <h2>Campaigns for Verttical ID: {vertical}</h2>
-                <CampaignList campaignList={lpCampaigns} />
+                <Typography variant="h4" component="h2" align='left' margin={'30px 0'}>Lead Vertical</Typography>
+                <FormControl fullWidth >
+                  <InputLabel id="select-vertical-label">Select Vertical</InputLabel>
+                  <Select
+                    labelId='select-vertical-label'
+                    name='vertical'
+                    id='verticalSelect'
+                    value={vertical}
+                    onChange={handleChangeVertical}
+                    label="Select Vertical"
+                    placeholder="Select Vertical"
+                    sx={{ background: '#fff', fontWeight: 'bold', textAlign: 'left' }}
+                  >
+                    {lpVerticals.map((ver: any) => (
+                      <MenuItem
+                        key={ver.verticalID}
+                        value={ver.verticalID}
+                      >
+                        {ver.verticalName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
             ) : (
+                  <p>No data available</p>
+                )}
+            {(lpCampaigns && lpCampaigns.length > 0 && !isLoading) ? (
+              <div>
+                <Typography variant="h4" component="h2" align='left' margin={'30px 0'}>Campaigns for Vertical ID: {vertical}</Typography>
+                <CampaignList campaignList={lpCampaigns} />
+              </div>
+            ) : !isLoading ? (
               <p>No Campaigns available</p>
-            )
-          }
-        </div>
+            ) : null}
+          </div>
+        ) : currentUser == null ? (
+          <div>You must login to view this page</div>
+        ) : null}
         <Copyright sx={{ pt: 4 }} />
       </Container>
     </Box>

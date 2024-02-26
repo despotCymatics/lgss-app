@@ -6,14 +6,17 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../contexts/user.context';
+import { Link } from '@mui/material';
+import { SignOutUser } from '../../utils/firebase/firebase.utils';
 
 // const pages = ['Products', 'Pricing', 'Blog'];
 // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -23,6 +26,8 @@ const Navigation = () => {
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -38,6 +43,12 @@ const Navigation = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleSignOut = async () => {
+    const result = await SignOutUser()
+    console.log(result)
+    navigate('/sign-in')
+  }
 
   return (
     <Fragment>
@@ -123,36 +134,52 @@ const Navigation = () => {
                 Dashboard
               </Button>
             </Box>
-            {}
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
+            {currentUser ? (
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    {currentUser.displayName ? (
+                      <div>
+                        <span>{currentUser.displayName}</span>
+                        <Avatar alt={currentUser.displayName}>
+                          <PersonIcon />
+                        </Avatar>
+                      </div>
+                    ) : (
+                        <Avatar alt="User">
+                          <PersonIcon />
+                        </Avatar>
+                      )}
 
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">Logout</Typography>
-                </MenuItem>
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
 
-              </Menu>
-            </Box>
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center" onClick={handleSignOut}>Logout</Typography>
+                  </MenuItem>
+
+                </Menu>
+              </Box>
+            ) : (
+                <Link href={'/sign-in'}><Typography textAlign="center">Sign In</Typography></Link>
+              )}
+
           </Toolbar>
         </Container>
       </AppBar>

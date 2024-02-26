@@ -49,10 +49,10 @@ const Row = ({ campaign }: RowProps) => {
         <TableCell component="th" scope="row">
           {campaign.campaignName}
         </TableCell>
-        <TableCell align="right">{"ID: " + campaign.affiliateID + " - " + campaign.affiliateName}</TableCell>
-        <TableCell align="right">{campaign.payout}</TableCell>
+        <TableCell>{"ID: " + campaign.affiliateID + " - " + campaign.affiliateName}</TableCell>
         <TableCell align="right">123.44</TableCell>
-        <TableCell align="right">{campaign.status}</TableCell>
+        <TableCell align="right">123.44</TableCell>
+        <TableCell align="right">123.44</TableCell>
         <TableCell align="right">
           <IconButton
             aria-label="expand row"
@@ -86,10 +86,10 @@ const CampaignList = ({ campaignList }: CampaignListProps) => {
           <TableRow>
             <TableCell><strong>Toggle</strong></TableCell>
             <TableCell><strong>Name</strong></TableCell>
-            <TableCell align="right"><strong>Affiliate</strong></TableCell>
-            <TableCell align="right"><strong>Payout</strong></TableCell>
+            <TableCell><strong>Affiliate</strong></TableCell>
+            <TableCell align="right"><strong>Curr.Bid</strong></TableCell>
             <TableCell align="right"><strong>Avg. Bid</strong></TableCell>
-            <TableCell align="right"><strong>Status</strong></TableCell>
+            <TableCell align="right"><strong>Data</strong></TableCell>
             <TableCell />
           </TableRow>
         </TableHead>
