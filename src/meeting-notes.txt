@@ -24,3 +24,15 @@ to get affiliates we need to get offers, they have campains from affiliates
 flow:
 users logs in, get the advetrtiserId from it, display dashboard, get all contracts/services for advertiserID in filter/dropdown, 
 based on contractId dispaly all affiliates and its campagins (get offesrs and campaigns??)
+
+
+filter offers based on advertiserID
+
+
+const url = 'https://api.leadspedia.com/core/v2/offers/getAll.do?revenueModel=Revenue+Per+Lead&payoutModel=Pay+Per+Lead';
+const options = {
+  method: 'GET',
+  headers: {
+    Authorization: 'Basic MDgxNjkyZjFlODFmOGIzNDFmNmM2YWE4MzQzYzQ2ZGE6ODlmMmNmNzI0ZDdkMzM1NTRjZWJhYjNlOGU4YjMyMmQ='
+  }
+};

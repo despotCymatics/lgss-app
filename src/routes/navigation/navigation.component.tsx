@@ -15,7 +15,6 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../contexts/user.context';
-import { Link } from '@mui/material';
 import { SignOutUser } from '../../utils/firebase/firebase.utils';
 
 // const pages = ['Products', 'Pricing', 'Blog'];
@@ -72,7 +71,7 @@ const Navigation = () => {
               }}
             >
               LGSS
-          </Typography>
+            </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
@@ -125,7 +124,7 @@ const Navigation = () => {
               }}
             >
               LGSS
-          </Typography>
+            </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button
                 onClick={handleCloseNavMenu}
@@ -137,21 +136,32 @@ const Navigation = () => {
             {currentUser ? (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Button onClick={handleOpenUserMenu} sx={{ p: 0, textTransform: 'capitalize' }}>
+
                     {currentUser.displayName ? (
-                      <div>
-                        <span>{currentUser.displayName}</span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: 'white',
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            padding: '5px'
+                          }}
+                        >{currentUser.displayName + ' ' + currentUser.advertiserId}</Typography>
                         <Avatar alt={currentUser.displayName}>
                           <PersonIcon />
                         </Avatar>
-                      </div>
+                      </Box>
                     ) : (
-                        <Avatar alt="User">
-                          <PersonIcon />
-                        </Avatar>
-                      )}
+                      <Avatar alt="User">
+                        <PersonIcon />
+                      </Avatar>
+                    )}
 
-                  </IconButton>
+                  </Button>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
@@ -169,16 +179,14 @@ const Navigation = () => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography textAlign="center" onClick={handleSignOut}>Logout</Typography>
                   </MenuItem>
-
                 </Menu>
               </Box>
             ) : (
-                <Link href={'/sign-in'}><Typography textAlign="center">Sign In</Typography></Link>
-              )}
+              <Button href={'/sign-in'} variant="contained">Sign In</Button>
+            )}
 
           </Toolbar>
         </Container>

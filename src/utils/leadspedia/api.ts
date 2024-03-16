@@ -1,6 +1,5 @@
 const API_BASE_URL = process.env.REACT_APP_LP_API_BASE_URL || ''
 const AUTH = process.env.REACT_APP_LP_AUTH || 'default_token'
-//const accountMangerID = "6393"
 
 type Payload = Record<string, string | number>;
 
@@ -8,6 +7,7 @@ interface ApiResponse {
   message: string;
   success: boolean;
   response: any;
+  data?: any;
 }
 
 export interface GetRequest {
@@ -47,3 +47,107 @@ export const getData = async <T>(request: GetRequest): Promise<ApiResponse> => {
   }
 };
 
+export const fetchCampaigns = async (verticalID: string) => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'campaigns/getAll.do',
+      payload: {
+        verticalID,
+        limit: 5,
+        status: 'Active',
+      }
+    });
+
+    if (result.success) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+export const fetchCampaignInfo = async (id: number) => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'campaigns/getBasicInfo.do',
+      payload: {
+        campaignID: id,
+      }
+    });
+
+    if (result.success) {
+      return result.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  } 
+};
+
+export const fetchOffers = async (verticalID: string, advertiserId?:string) => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'offers/getAll.do',
+      payload: {
+        verticalID,
+        limit: 250,
+        status: 'Active',
+        revenueModel: 'Revenue Per Lead',
+        payoutModel: 'Pay Per Lead',
+        advertiserID: advertiserId ?? '',
+      }
+    });
+
+    if (result.success) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+export const fetchContractFieldRevenueRules = async () => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'contractFieldRevenueRules/getAll.do'
+    });
+
+    if (result.success && result.response.data.length > 0) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+export const fetchContracts = async (verticalID: string, advertiserId:string) => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'contractFieldRevenueRules/getAll.do',
+      payload: {
+        verticalID,
+        advertiserID: advertiserId,
+      }
+    });
+
+    if (result.success && result.response.data.length > 0) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+
+const fetchAffiliates = async () => {
+  try {
+    const result = await getData<GetRequest>({
+      path: 'affiliates/getAll.do'
+    });
+
+    if (result.success && result.response.data.length > 0) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};

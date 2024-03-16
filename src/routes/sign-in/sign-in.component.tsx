@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { Button, CircularProgress, TextField, Box } from '@mui/material';
 import { signInUser } from '../../utils/firebase/firebase.utils';
 import { UserContext } from '../../contexts/user.context';
+import { useNavigate } from 'react-router-dom';
 
 const defaultSignInFormFields = {
   email: '',
@@ -13,6 +14,7 @@ const SignIn = () => {
   const { email, password } = formFields
   const [loading, setLoading] = useState(false)
   const { currentUser } = useContext(UserContext)
+  const navigate = useNavigate();
 
   const resetFormFields = () => {
     setFormFields(defaultSignInFormFields)
@@ -31,6 +33,7 @@ const SignIn = () => {
       const response = await signInUser({ email, password })
       console.log(response)
       resetFormFields()
+      navigate('/')
     } catch (error: any) {
       console.log(error)
       alert(error.message)
