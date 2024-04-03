@@ -51,7 +51,7 @@ const Navigation = () => {
 
   return (
     <Fragment>
-      <AppBar position="static">
+      <AppBar sx={{ backgroundColor: '#0d47a1' }} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -70,7 +70,7 @@ const Navigation = () => {
                 textDecoration: 'none',
               }}
             >
-              LGSS
+              The Shop
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
@@ -111,27 +111,27 @@ const Navigation = () => {
               variant="h5"
               noWrap
               component="a"
-              href="#app-bar-with-responsive-menu"
+              href="/"
               sx={{
                 mr: 2,
                 display: { xs: 'flex', md: 'none' },
                 flexGrow: 1,
                 fontFamily: 'monospace',
                 fontWeight: 700,
-                letterSpacing: '.3rem',
+                letterSpacing: '.1rem',
                 color: 'inherit',
                 textDecoration: 'none',
               }}
             >
-              LGSS
+              The Shop
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              <Button
+              {/* <Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Dashboard
-              </Button>
+              </Button> */}
             </Box>
             {currentUser ? (
               <Box sx={{ flexGrow: 0 }}>
@@ -185,7 +185,7 @@ const Navigation = () => {
                 </Menu>
               </Box>
             ) : (
-              <Button href={'/sign-in'} variant="contained">Sign In</Button>
+              <Button href={'/sign-in'} variant="contained" endIcon={<PersonIcon />}>Sign In</Button>
             )}
 
           </Toolbar>

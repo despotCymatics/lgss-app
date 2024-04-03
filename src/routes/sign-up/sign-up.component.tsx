@@ -54,12 +54,15 @@ const SignUp = () => {
   }
 
   return (
-    <div>
+    <Box sx={{ 
+          padding: '3rem 0',
+        }}>
       <h1>Sign-Up user for LGSS</h1>
       <Box
         component="form"
         sx={{
-          '& .MuiTextField-root': { m: 1, width: '50%' },
+          padding: '1rem',
+          '& .MuiTextField-root': { mb: 3, width: '100%', maxWidth: '420px' },
         }}
         noValidate
         autoComplete="off"
@@ -127,7 +130,7 @@ const SignUp = () => {
           }
         </div>
       </Box>
-    </div >
+    </Box >
   );
 }
 

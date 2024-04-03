@@ -4,8 +4,8 @@ import { User } from 'firebase/auth'
 import { DocumentData } from 'firebase/firestore';
 
 interface UserContextProps {
-  currentUser: DocumentData | null;
-  setCurrentUser: Dispatch<SetStateAction<User | null>>;
+  currentUser: DocumentData | null | undefined;
+  setCurrentUser: Dispatch<SetStateAction<User | null | undefined>>;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -18,7 +18,7 @@ interface UserProviderProps {
 }
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [currentUser, setCurrentUser] = useState<DocumentData | null>(null);
+  const [currentUser, setCurrentUser] = useState<DocumentData | null>();
   const value: UserContextProps = { currentUser, setCurrentUser };
 
   useEffect(() => {

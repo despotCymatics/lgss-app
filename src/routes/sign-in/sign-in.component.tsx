@@ -44,12 +44,15 @@ const SignIn = () => {
   return (
     <div>
       {!currentUser ? (
-        <div>
+        <Box sx={{ 
+          padding: '3rem 0',
+        }}>
           <h1>Sign In</h1>
           <Box
             component="form"
             sx={{
-              '& .MuiTextField-root': { m: 1, width: '50%' },
+              padding: '1rem',
+              '& .MuiTextField-root': { mb: 3, width: '100%', maxWidth: '420px' },
             }}
             noValidate
             autoComplete="off"
@@ -92,7 +95,7 @@ const SignIn = () => {
               }
             </div>
           </Box>
-        </div>
+        </Box>
       ) : null}
     </div>
 
