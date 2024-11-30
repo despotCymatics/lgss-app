@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, CircularProgress, TextField, Box } from '@mui/material';
-import { createUser } from '../../utils/firebase/firebase.utils';
+import { Button, CircularProgress, TextField, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { SignOutUser, createUser } from '../../utils/firebase/firebase.utils';
 //import { useForm } from 'react-hook-form';
 
 const defaultSignUpFormFields = {
@@ -15,6 +15,7 @@ const SignUp = () => {
   const [formFields, setFormFields] = useState(defaultSignUpFormFields)
   const { displayName, email, password, advertiserId } = formFields
   const [loading, setLoading] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
 
   const resetFormFields = () => {
     setFormFields(defaultSignUpFormFields)
@@ -42,6 +43,7 @@ const SignUp = () => {
       }
       if (response.user) {
         console.log(response.user);
+        setOpenDialog(true)
       }
       resetFormFields()
     } catch (err: any) {
@@ -53,9 +55,14 @@ const SignUp = () => {
     setLoading(false)
   }
 
+  const handleCloseDialog = () => { 
+    setOpenDialog(false)
+    SignOutUser()
+  }
+
   return (
     <Box sx={{ 
-          padding: '3rem 0',
+          padding: '6rem 0 3rem',
         }}>
       <h1>Sign-Up user for LGSS</h1>
       <Box
@@ -130,6 +137,19 @@ const SignUp = () => {
           }
         </div>
       </Box>
+      <Dialog
+        open={openDialog}
+        
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"User Created Successfully!"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </Box >
   );
 }

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { fetchSchedule } from '../../utils/leadspedia/api';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import CampaignCard from '../campaign-card/campaign-card.component';
+import { Rule } from '../../routes/dashboard/dashboard.component';
+import { useEffect, useState } from 'react';
 
 export interface LpCampaign {
   campaignID: number;
@@ -11,48 +11,60 @@ export interface LpCampaign {
   affiliateName: string;
   affiliateID: string;
   offerID: string;
+  offerName: string;
+  verticalName: string;
 }
 
 interface CampaignListProps {
+  campaignType: string;
   campaignList: LpCampaign[];
   contractId: number;
   scheduledPrice: string;
+  rules: Rule[];
+  verticalId: string;
 }
 
-const CampaignList = ({ campaignList, contractId, scheduledPrice }: CampaignListProps) => {
 
-  // const [scheduledPrice, setScheduledPrice] = useState<string>('');
+const CampaignList: React.FC<CampaignListProps> = ({ campaignType, campaignList, contractId, scheduledPrice, rules, verticalId }) => {
 
-  // const getScheduledPrice = async () => {
-  //   if (contractId === 0) return;
-  //   try {
-  //     const schedule = await fetchSchedule(contractId);
-  //     console.log(schedule);
-  //     console.log('Schedule data:', schedule); // Log the schedule data
-  //     setScheduledPrice(schedule[0].price);
-  //   } catch (error: any) {
-  //     console.error('Error fetching data:', error.message);
-  //   }
-  // }
+  const [ruleMap, setRuleMap] = useState<{ [key: string]: Rule }>({});
 
-  // useEffect(() => {
-  //   getScheduledPrice();
-  // }, [campaignList]); 
+  useEffect(() => {
+    const createRuleMap = () => {
+      const map = rules.reduce<{ [key: string]: Rule }>((acc, rule) => {
+        const key = `${rule.affiliateID}-${rule.campaignID}`;
+        acc[key] = rule;
+        return acc;
+      }, {});
+      setRuleMap(map);
+    };
 
-  console.log('Scheduled price:', scheduledPrice); // Log the scheduledPrice state
+    createRuleMap();
+  }, [rules]);
+
 
   return (
-    <Grid container spacing={2}>
-      {campaignList.map((campaign) => (
-        <CampaignCard
-          key={campaign.campaignID}
-          campaign={campaign}
-          contractId={contractId}
-          scheduledPrice={scheduledPrice}
-        />
-      ))}
-    </Grid>
+    <Box sx={{ flexGrow: 1, width: '100%', padding: 2, boxSizing: 'border-box' }}>
+      <Grid container sx={{padding: 2, justifyContent: 'center'}} spacing={2}>
+        {campaignList.map((campaign) => {
+          const ruleKey = `${campaign.affiliateID}-${campaign.campaignID}`;
+          const matchedRule = ruleMap[ruleKey];
+
+          return (
+            <CampaignCard
+              key={campaign.campaignID}
+              campaignType={campaignType}
+              campaign={campaign}
+              contractId={contractId}
+              scheduledPrice={scheduledPrice}
+              rule={matchedRule}
+              verticalId={verticalId}
+            />
+          );
+        })}
+      </Grid>
+    </Box>
   );
 }
 
-export default CampaignList
+export default CampaignList;

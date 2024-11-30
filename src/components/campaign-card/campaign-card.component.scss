@@ -1,0 +1,61 @@
+.dashboard {
+  .campaignCard {
+    text-align: left;
+    box-shadow: none;
+    border-radius: 15px;
+    border: 2px solid #00b5ad;
+    background-color: rgba(0, 181, 173, 0.02);
+
+    &.inactive {
+      border: 2px solid #d9d9d9;
+      background-color: #fff;
+      button {
+        background: #00b5ad80;
+      }
+    }
+    .cardHeader {
+      position: relative;
+      img.badge {
+        position: absolute;
+        bottom: 10px;
+        right: 15px;
+        width: 35px;
+        height: 35px;
+        z-index: 2;
+      }
+    }
+
+    .cardContent {
+      overflow: auto;
+      height: 100px;
+      position: relative;
+    }
+
+    .campaignLogo {
+      width: 48px;
+      height: 48px;
+      background: #d9d9d9;
+      text-align: center;
+      font-size: 12px;
+      color: #000;
+    }
+
+    .bidInput {
+      margin-top: 10px;
+      width: 100%;
+
+      label {
+        font-weight: 600;
+        font-size: 18px;
+      }
+      input {
+        font-weight: 600;
+        font-size: 18px;
+      }
+      button {
+        box-shadow: none;
+        margin-top: -10px;
+      }
+    }
+  }
+}

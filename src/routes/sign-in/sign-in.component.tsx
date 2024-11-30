@@ -45,7 +45,7 @@ const SignIn = () => {
     <div>
       {!currentUser ? (
         <Box sx={{ 
-          padding: '3rem 0',
+          padding: '6rem 0 3rem',
         }}>
           <h1>Sign In</h1>
           <Box

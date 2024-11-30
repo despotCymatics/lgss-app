@@ -1,0 +1,14 @@
+#root {
+  .appBar {
+    background-color: #fff;
+    position: fixed;
+    z-index: 100;
+    box-shadow: none;
+    border-bottom: 1px solid #ccdedd;
+
+    .toolBar {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}

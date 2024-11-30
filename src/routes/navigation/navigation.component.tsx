@@ -1,4 +1,4 @@
-import { useState, Fragment, useContext } from 'react';
+import { useState, Fragment, useContext, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,12 +16,16 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../contexts/user.context';
 import { SignOutUser } from '../../utils/firebase/firebase.utils';
+import { useLocation } from 'react-router-dom';
+import { Link } from '@mui/material';
+import './navigation.component.scss';
 
 // const pages = ['Products', 'Pricing', 'Blog'];
 // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const Navigation = () => {
-  const { currentUser } = useContext(UserContext)
+  const { currentUser } = useContext(UserContext);
+  const [initials, setInitials] = useState<string>('');
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -49,29 +53,49 @@ const Navigation = () => {
     navigate('/sign-in')
   }
 
+  const location = useLocation();
+  console.log("Current URL:", location.pathname);
+
+
+  useEffect(() => {
+    if (currentUser) {
+      let displayName = currentUser?.displayName || '';
+      if (displayName.includes(' ')) {
+        let names = displayName.split(' ');
+        setInitials(names[0][0] + names[1][0]);
+      } else {
+        setInitials(displayName[0]);
+      }
+    }
+  }, [currentUser]);
+
   return (
     <Fragment>
-      <AppBar sx={{ backgroundColor: '#0d47a1' }} position="static">
+      <AppBar className='appBar'>
         <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="/"
+          <Toolbar className='toolBar' disableGutters>
+            <a href="/">
+              <Box
+                component="img"
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  marginRight: 2,
+                  width: 150,
+                }}
+                src={require('../../assets/img/shop-logo.png')}
+              />
+            </a>
+            <Box
+              component="img"
               sx={{
-                mr: 2,
                 display: { xs: 'none', md: 'flex' },
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
+                marginRight: 0,
+                width: 150,
               }}
-            >
-              The Shop
-            </Typography>
+              src={require('../../assets/img/lg-logo.png')}
+            />
+
+
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
@@ -81,7 +105,7 @@ const Navigation = () => {
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
-                <MenuIcon />
+                <MenuIcon color='primary' />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -106,36 +130,27 @@ const Navigation = () => {
                 </MenuItem>
               </Menu>
             </Box>
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="/"
+            <Box
+              component="img"
               sx={{
-                mr: 2,
                 display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.1rem',
-                color: 'inherit',
-                textDecoration: 'none',
+                marginRight: 2,
+                width: 120,
               }}
-            >
-              The Shop
-            </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {/* <Button
+              src={require('../../assets/img/shop-logo.png')}
+            />
+
+            {/* <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+              <Button
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Dashboard
-              </Button> */}
-            </Box>
+              </Button>
+            </Box> */}
             {currentUser ? (
               <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
+                <Tooltip title="User Menu">
                   <Button onClick={handleOpenUserMenu} sx={{ p: 0, textTransform: 'capitalize' }}>
 
                     {currentUser.displayName ? (
@@ -148,12 +163,15 @@ const Navigation = () => {
                       >
                         <Typography
                           sx={{
-                            padding: '5px'
+                            padding: '5px',
+                            color: '#000',
                           }}
                         >{currentUser.displayName + ' ' + currentUser.advertiserId}</Typography>
-                        <Avatar alt={currentUser.displayName}>
-                          <PersonIcon />
-                        </Avatar>
+                        <Avatar
+                          sx={{ backgroundColor: '#00B5AD' }}
+                          alt={currentUser.displayName}
+                          children={initials}
+                        />
                       </Box>
                     ) : (
                       <Avatar alt="User">
@@ -182,11 +200,16 @@ const Navigation = () => {
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Typography textAlign="center" onClick={handleSignOut}>Logout</Typography>
                   </MenuItem>
+                  {(currentUser && currentUser.role == 'admin') && (
+                    <MenuItem>
+                      <Link href='/admin' textAlign="center">Admin</Link>
+                    </MenuItem>
+                  )}
                 </Menu>
               </Box>
-            ) : (
+            ) : (location.pathname !== '/sign-up') ? (
               <Button href={'/sign-in'} variant="contained" endIcon={<PersonIcon />}>Sign In</Button>
-            )}
+            ) : null}
 
           </Toolbar>
         </Container>

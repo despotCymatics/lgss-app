@@ -161,30 +161,19 @@ export const fetchOffers = async (
   }
 };
 
-export const fetchContractFieldRevenueRules = async (contractId: number) => {
-  try {
-    const result = await getData<Request>({
-      path: 'contractFieldRevenueRules/getAll.do',
-      payload: {
-        contractID: contractId,
-      },
-    });
-
-    if (result.success) {
-      return result.response.data;
-    }
-  } catch (error: any) {
-    console.error('Error fetching data:', error.message);
-  }
-};
-
 export const fetchContracts = async (
+  lpType: string,
   verticalID: string,
   advertiserID: string
 ) => {
+  let path = 'leadDistributionContracts/getAll.do';
+  if (lpType === 'calls') {
+    path = 'callRoutingContracts/getAll.do';
+  }
+     
   try {
     const result = await getData<Request>({
-      path: 'leadDistributionContracts/getAll.do',
+      path: path,
       payload: {
         verticalID,
         advertiserID,
@@ -219,7 +208,28 @@ export const fetchSchedule = async (contractID: number) => {
 
 // LP API POST Calls
 //https://api.leadspedia.com/core/v2/contractFieldRevenueRules/create.do?contractID=22&fieldID=83&fieldValue=5&price=1
-export const createContractFieldRevenueRules = async (
+
+
+// LEAD RULES - GET CONTRACT FIELD REVENUE RULES
+export const fetchContractLeadFieldRevenueRules = async (contractId: number) => {
+  try {
+    const result = await getData<Request>({
+      path: 'contractFieldRevenueRules/getAll.do',
+      payload: {
+        contractID: contractId,
+      },
+    });
+
+    if (result.success) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// LEAD RULES - CREATE CONTRACT FIELD REVENUE RULES
+export const createContractLeadFieldRevenueRules = async (
   contractID: number,
   fieldID: number,
   fieldValue: string,
@@ -244,7 +254,8 @@ export const createContractFieldRevenueRules = async (
   }
 };
 
-export const updateContractFieldRevenueRules = async (
+// LEAD RULES - UPDATE CONTRACT FIELD REVENUE RULES
+export const updateContractLeadFieldRevenueRules = async (
   fieldRevenueRuleID: number,
   fieldID: number,
   fieldValue: string,
@@ -258,6 +269,140 @@ export const updateContractFieldRevenueRules = async (
         fieldID,
         fieldValue,
         price,
+      },
+    });
+
+    if (result.success) {
+      return result;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// CALL RULES - GET CONTRACT FIELD REVENUE RULES
+export const fetchContractCallFieldRevenueRules = async (contractId: number) => {
+  try {
+    const result = await getData<Request>({
+      path: 'contractCallFieldRevenueRules/getAll.do',
+      payload: {
+        contractID: contractId,
+      },
+    });
+
+    if (result.success) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// CALL RULES - CREATE CONTRACT FIELD REVENUE RULES
+export const createContractCallFieldRevenueRules = async (
+  contractID: number,
+  fieldID: number,
+  fieldValue: string,
+  price: number
+) => {
+  try {
+    const result = await postData<Request>({
+      path: 'contractCallFieldRevenueRules/create.do',
+      payload: {
+        contractID,
+        fieldID,
+        fieldValue,
+        price,
+      },
+    });
+
+    if (result.success) {
+      return result;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// LEAD RULES - UPDATE CONTRACT FIELD REVENUE RULES
+export const updateContractCallFieldRevenueRules = async (
+  fieldRevenueRuleID: number,
+  fieldID: number,
+  fieldValue: string,
+  price: number
+) => {
+  try {
+    const result = await postData<Request>({
+      path: 'contractCallFieldRevenueRules/update.do',
+      payload: {
+        fieldRevenueRuleID,
+        fieldID,
+        fieldValue,
+        price,
+      },
+    });
+
+    if (result.success) {
+      return result;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// ROUTING RULES - GET ALL (Toggle)
+export const fetchRules = async (advertiserID: string) => {
+  try {
+    const result = await getData<Request>({
+      path: 'leadRoutingRules/getAll.do',
+      payload: {
+        advertiserID,
+        status: 'Active',
+      },
+    });
+
+    if (result.success) {
+      return result.response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// ROUTING RULES - CREATE (Toggle)
+export const createRoutingRule = async (
+  buyerID: number,
+  campaignID: number,
+  contractID: number,
+  affiliateID: string
+) => {
+  try {
+    const result = await postData<Request>({
+      path: 'leadRoutingRules/create.do',
+      payload: {
+        buyerID,
+        contractID,
+        affiliateID,
+        campaignID,
+        rule: 'Block',
+      },
+    });
+
+    if (result.success) {
+      return result;
+    }
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+  }
+};
+
+// ROUTING RULES - DELETE (Toggle)
+export const deleteRoutingRule = async (leadRoutingID: number) => {
+  try {
+    const result = await postData<Request>({
+      path: 'leadRoutingRules/delete.do',
+      payload: {
+        leadRoutingID,
       },
     });
 

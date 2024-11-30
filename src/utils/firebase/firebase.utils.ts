@@ -1,7 +1,35 @@
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  User,
+  UserCredential,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import {
+  DocumentReference,
+  doc,
+  getDoc,
+  updateDoc,
+  getDocs,
+  getFirestore,
+  setDoc,
+  DocumentData,
+  collection,
+  query,
+  where,
+} from 'firebase/firestore';
 
-import {initializeApp} from 'firebase/app'
-import {getAuth, GoogleAuthProvider, createUserWithEmailAndPassword, User, UserCredential, signInWithEmailAndPassword, signOut, onAuthStateChanged} from 'firebase/auth'
-import { DocumentReference, doc, getDoc, getFirestore, setDoc, DocumentData } from 'firebase/firestore'
+export interface LPUser {
+  id: string;
+  email: string;
+  displayName: string;
+  advertiserId: string;
+  role: string;
+}
 
 interface CreateUserParams {
   email: string;
@@ -13,7 +41,7 @@ interface CreateUserParams {
 interface CreateUserResult {
   success: boolean;
   error?: string;
-  user?: UserCredential
+  user?: UserCredential;
 }
 
 interface SignInUserParams {
@@ -22,26 +50,28 @@ interface SignInUserParams {
 }
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZOS7FSyEQX4WZb8Bj9s5qM7PZbElr_0g",
-  authDomain: "lgss-db.firebaseapp.com",
-  projectId: "lgss-db",
-  storageBucket: "lgss-db.appspot.com",
-  messagingSenderId: "967093546241",
-  appId: "1:967093546241:web:51a16e0c1e59af58527f00"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
+
+//console.log(firebaseConfig);
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
-const provider = new GoogleAuthProvider()
+const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
-  prompt: 'select_account'
-})
+  prompt: 'select_account',
+});
 
-export const auth = getAuth()
+export const auth = getAuth();
 //export const signInWithPopup = () => { }
 
-export const db = getFirestore()
+export const db = getFirestore();
 
 interface AdditionalInformation {
   [key: string]: any;
@@ -50,8 +80,7 @@ interface AdditionalInformation {
 export const createUserDocumentFromAuth = async (
   userAuth: User,
   additionalInformation?: AdditionalInformation
-):  Promise<DocumentData|null> => {
-
+): Promise<DocumentData | null> => {
   if (!userAuth) return null;
 
   const userDocRef: DocumentReference = doc(db, 'users', userAuth.uid);
@@ -74,7 +103,7 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userSnapshot.data() ?? null
+  return userSnapshot.data() ?? null;
 };
 
 export const createUser = async ({
@@ -87,11 +116,19 @@ export const createUser = async ({
     throw new Error('Missing fields!');
   }
   try {
-    const userResponse: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userResponse: UserCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
     if (userResponse.user.uid) {
       // Create user document
-      const docResponse = await createUserDocumentFromAuth(userResponse.user, { displayName, advertiserId, role:'buyer' });
+      const docResponse = await createUserDocumentFromAuth(userResponse.user, {
+        displayName,
+        advertiserId,
+        role: 'buyer',
+      });
       console.log(docResponse);
 
       return { success: true, user: userResponse };
@@ -104,14 +141,78 @@ export const createUser = async ({
   }
 };
 
-export const signInUser = async ({email, password}: SignInUserParams) => {
+export const updateUser = async ({
+  id,
+  email,
+  displayName,
+  advertiserId,
+  role,
+}: {
+  id: string;
+  email?: string;
+  displayName?: string;
+  advertiserId?: string;
+  role?: string;
+}): Promise<{ success: boolean; error?: string }> => {
+  if (!id) {
+      throw new Error('Missing user ID!');
+  }
 
- return await signInWithEmailAndPassword(auth, email, password)
-}
+  const firestore = getFirestore(firebaseApp);
 
-export const SignOutUser = () => signOut(auth)
+  try {
+      const userRef = doc(firestore, 'users', id);
 
-export const onAuthStateChangedListener = (callback:any) => {
-  onAuthStateChanged(auth, callback)
-}
+      const updatedData: { [key: string]: string | undefined } = {};
+      if (email) updatedData.email = email;
+      if (displayName) updatedData.displayName = displayName;
+      if (advertiserId) updatedData.advertiserId = advertiserId;
+      if (role) updatedData.role = role;
+
+      await updateDoc(userRef, updatedData);
+
+      return { success: true };
+  } catch (error: any) {
+      console.error('Error in editUser:', error.message);
+      return { success: false, error: error.message as string };
+  }
+};
+
+export const loginAsUser = async (advertiserId: string) => {
+  const firestore = getFirestore(firebaseApp);
+
+  try {
+    const usersCollection = collection(firestore, 'users');
+    const q = query(usersCollection, where('advertiserId', '==', advertiserId));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.data() as LPUser;
+    } else {
+      console.error('No user found with the given advertiserId');
+    }
+  } catch (error: any) {
+    console.error('Error logging in as user:', error.message);
+  }
+};
+
+export const signInUser = async ({ email, password }: SignInUserParams) => {
+  return await signInWithEmailAndPassword(auth, email, password);
+};
+
+export const SignOutUser = () => signOut(auth);
+
+export const onAuthStateChangedListener = (callback: any) => {
+  onAuthStateChanged(auth, callback);
+};
+
+export  const fetchUsers = async () => {
+  const firestore = getFirestore(firebaseApp);
+  const usersCollection = collection(firestore, 'users');
+  const usersSnapshot = await getDocs(usersCollection);
+  const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LPUser));  
   
+  return usersList;
+};
+
